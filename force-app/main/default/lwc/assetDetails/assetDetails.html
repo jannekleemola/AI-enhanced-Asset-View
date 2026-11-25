@@ -1,0 +1,383 @@
+<template>
+    <div class="card">
+
+        <!-- Header -->
+        <div class="card-header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <lightning-icon icon-name="standard:asset_object" size="small"></lightning-icon>
+                </div>
+                <h2 class="card-title">{cardTitle}</h2>
+            </div>
+            <div class="header-right">
+                <!-- Map icon button -->
+                <template lwc:if={showMapIcon}>
+                    <button class="map-btn" title="View Asset Location" onclick={handleMapOpen}>
+                        <lightning-icon icon-name="utility:location" size="x-small" class="map-btn-icon"></lightning-icon>
+                    </button>
+                </template>
+                <template lwc:if={assetId}>
+                    <lightning-button-menu
+                        alternative-text="Actions"
+                        label="Actions"
+                        icon-name="utility:down"
+                        menu-alignment="right"
+                        variant="border"
+                        class="actions-menu"
+                        onselect={handleAction}>
+                        <lightning-menu-item value="view" label="View Asset"></lightning-menu-item>
+                        <lightning-menu-item value="edit" label="Edit Asset"></lightning-menu-item>
+                        <template lwc:if={flowApiName}>
+                            <lightning-menu-divider></lightning-menu-divider>
+                            <lightning-menu-item value="flow" label={flowMenuLabel} prefix-icon-name="utility:flow"></lightning-menu-item>
+                        </template>
+                        <lightning-menu-divider></lightning-menu-divider>
+                        <lightning-menu-item value="clone" label="Clone Asset"></lightning-menu-item>
+                    </lightning-button-menu>
+                </template>
+            </div>
+        </div>
+
+        <!-- Loading skeleton -->
+        <template lwc:if={isLoading}>
+            <div class="card-body">
+                <div class="field-grid">
+                    <div class="field-item">
+                        <div class="skeleton skeleton-label"></div>
+                        <div class="skeleton skeleton-value"></div>
+                    </div>
+                    <div class="field-item">
+                        <div class="skeleton skeleton-label"></div>
+                        <div class="skeleton skeleton-value"></div>
+                    </div>
+                    <div class="field-item">
+                        <div class="skeleton skeleton-label"></div>
+                        <div class="skeleton skeleton-value-short"></div>
+                    </div>
+                    <div class="field-item">
+                        <div class="skeleton skeleton-label"></div>
+                        <div class="skeleton skeleton-value-short"></div>
+                    </div>
+                    <div class="field-item">
+                        <div class="skeleton skeleton-label"></div>
+                        <div class="skeleton skeleton-value"></div>
+                    </div>
+                    <div class="field-item">
+                        <div class="skeleton skeleton-label"></div>
+                        <div class="skeleton skeleton-value"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Error state -->
+        <template lwc:elseif={hasError}>
+            <div class="card-body state-container">
+                <lightning-icon icon-name="utility:error" size="small" variant="error"></lightning-icon>
+                <p class="state-text state-text--error">Could not load asset data</p>
+            </div>
+        </template>
+
+        <!-- No asset linked -->
+        <template lwc:elseif={noAsset}>
+            <div class="card-body state-container">
+                <lightning-icon icon-name="utility:asset_object" size="small"></lightning-icon>
+                <p class="state-text">No asset linked to this record</p>
+            </div>
+        </template>
+
+        <!-- Main content -->
+        <template lwc:else>
+            <div class="card-body">
+                <div class="field-grid">
+
+                    <!-- Asset Name -->
+                    <div class="field-item">
+                        <span class="field-label">Asset Name</span>
+                        <a class="field-link" onclick={handleViewAsset}>{assetName}</a>
+                    </div>
+
+                    <template lwc:if={showSerialNumber}>
+                        <div class="field-item">
+                            <span class="field-label">Serial Number</span>
+                            <span class="field-value">{serialNumber}</span>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showStatus}>
+                        <div class="field-item">
+                            <span class="field-label">Status</span>
+                            <span class={statusBadgeClass}>{status}</span>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showWarrantyStatus}>
+                        <div class="field-item">
+                            <span class="field-label">Warranty Status</span>
+                            <span class={warrantyBadgeClass} title={warrantyDetail}>{warrantyStatus}</span>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showInstallDate}>
+                        <div class="field-item">
+                            <span class="field-label">Install Date</span>
+                            <span class="field-value">{installDate}</span>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showLastService}>
+                        <div class="field-item">
+                            <span class="field-label">Last Service</span>
+                            <template lwc:if={lastServiceId}>
+                                <a class="field-link" title={lastServiceTitle} onclick={handleLastServiceClick}>{lastServiceDate}</a>
+                            </template>
+                            <template lwc:else>
+                                <span class="field-value field-value--empty">—</span>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showLocation}>
+                        <div class="field-item">
+                            <span class="field-label">Location</span>
+                            <template lwc:if={locationId}>
+                                <a class="field-link" onclick={handleLocationClick}>{locationName}</a>
+                            </template>
+                            <template lwc:else>
+                                <span class="field-value field-value--empty">—</span>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showAccount}>
+                        <div class="field-item">
+                            <span class="field-label">Account</span>
+                            <template lwc:if={accountId}>
+                                <a class="field-link" onclick={handleAccountClick}>{accountName}</a>
+                            </template>
+                            <template lwc:else>
+                                <span class="field-value field-value--empty">—</span>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showPartNumber}>
+                        <div class="field-item">
+                            <span class="field-label">Part Number</span>
+                            <span class="field-value">{partNumber}</span>
+                        </div>
+                    </template>
+
+                </div>
+            </div>
+
+            <!-- Asset Insights panel -->
+            <template lwc:if={showEinsteinInsights}>
+                <div class="einstein-section">
+                    <div class={einsteinCardClass}>
+                        <div class="einstein-header">
+                            <button class="insight-toggle-area" aria-expanded={insightsAriaExpanded} title={toggleTitle} onclick={handleToggleInsights}>
+                                <lightning-icon icon-name="utility:einstein" size="small" class="einstein-icon"></lightning-icon>
+                                <h3 class="einstein-title">{insightTitle}</h3>
+                                <template lwc:if={insightsCollapsed}>
+                                    <span class="insight-collapsed-hint">{collapsedSummary}</span>
+                                </template>
+                            </button>
+                            <template lwc:if={showRefresh}>
+                                <button class="insight-refresh" title="Regenerate insight" onclick={handleRefreshInsight} disabled={aiLoading}>
+                                    <lightning-icon icon-name="utility:refresh" size="xx-small"></lightning-icon>
+                                </button>
+                            </template>
+                            <button class="insight-collapse" title={toggleTitle} aria-expanded={insightsAriaExpanded} onclick={handleToggleInsights}>
+                                <lightning-icon icon-name={toggleIcon} size="xx-small"></lightning-icon>
+                            </button>
+                        </div>
+                        <template lwc:if={insightsExpanded}>
+                        <template lwc:if={hasTemplateTabs}>
+                            <div class="insight-tabs" role="tablist">
+                                <template for:each={templateTabs} for:item="t">
+                                    <button key={t.api} class={t.className} role="tab" aria-selected={t.ariaSelected}
+                                        data-api={t.api} onclick={handleTemplateSelect}>{t.label}</button>
+                                </template>
+                            </div>
+                        </template>
+                        <div class="insight-scroll" style={insightScrollStyle}>
+                        <template lwc:if={aiLoading}>
+                            <div class="insight-loading">
+                                <div class="skeleton skeleton-value"></div>
+                                <div class="skeleton skeleton-value-short"></div>
+                                <span class="insight-loading-text">Generating with Einstein…</span>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <p class="einstein-body">{einsteinInsight}</p>
+                        </template>
+
+                        <!-- Selectable parts list -->
+                        <template lwc:if={showPartsList}>
+                            <div class="parts">
+                                <template lwc:if={partsLoading}>
+                                    <div class="insight-loading">
+                                        <div class="skeleton skeleton-value"></div>
+                                        <div class="skeleton skeleton-value"></div>
+                                        <div class="skeleton skeleton-value-short"></div>
+                                    </div>
+                                </template>
+                                <template lwc:elseif={partsMessage}>
+                                    <p class="parts-empty">{partsMessage}</p>
+                                </template>
+                                <template lwc:else>
+                                    <template lwc:if={partsSummary}>
+                                        <div class="parts-summary">{partsSummary}</div>
+                                    </template>
+                                    <template for:each={partGroups} for:item="g">
+                                        <div key={g.key} class="parts-group">
+                                            <div class="parts-group-head">
+                                                <span class="parts-group-label">{g.label}</span>
+                                                <span class="parts-group-hint">{g.hint}</span>
+                                            </div>
+                                            <template for:each={g.items} for:item="p">
+                                                <div key={p.productId} class={p.rowClass}>
+                                                    <template lwc:if={p.onJob}>
+                                                        <span class="part-onjob-icon" title="On the job">
+                                                            <lightning-icon icon-name="utility:check" size="xx-small" variant="success"></lightning-icon>
+                                                        </span>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <input type="checkbox" class="part-check" data-id={p.productId} id={p.productId}
+                                                            checked={p.checked} disabled={p.disabled} onchange={handlePartToggle} />
+                                                    </template>
+                                                    <span class="part-main">
+                                                        <span class="part-name">{p.name}</span>
+                                                        <span class="part-meta">{p.meta}
+                                                            <template lwc:if={p.onJob}><span class="part-onjob">On job</span></template>
+                                                        </span>
+                                                        <template lwc:if={p.hasProbability}>
+                                                            <span class="part-prob" title={p.reason}>
+                                                                <span class="part-bar"><span class="part-bar-fill" style={p.barStyle}></span></span>
+                                                                <span class="part-prob-label">{p.probabilityLabel}</span>
+                                                            </span>
+                                                        </template>
+                                                    </span>
+                                                    <span class="part-side">
+                                                        <span class={p.priceClass}>{p.price}</span>
+                                                        <span class="part-controls">
+                                                            <span class="qty-stepper">
+                                                                <button class="qty-btn" title="Decrease quantity" data-id={p.productId} data-dir="-1"
+                                                                    disabled={p.minusDisabled} onclick={handleQtyStep}>&minus;</button>
+                                                                <span class="qty-value">{p.qtyLabel}</span>
+                                                                <button class="qty-btn" title="Increase quantity" data-id={p.productId} data-dir="1"
+                                                                    disabled={p.plusDisabled} onclick={handleQtyStep}>+</button>
+                                                            </span>
+                                                            <template lwc:if={p.onJob}>
+                                                                <button class="part-remove" title="Remove from job" data-id={p.productId}
+                                                                    disabled={p.removeDisabled} onclick={handleRemovePart}>
+                                                                    <lightning-icon icon-name="utility:delete" size="xx-small"></lightning-icon>
+                                                                </button>
+                                                            </template>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <div class="parts-actions">
+                                        <lightning-button variant="neutral" label="Done" title={collapseButtonTitle}
+                                            onclick={handleCollapseInsights}></lightning-button>
+                                        <lightning-button variant="brand" label={addLabel} disabled={addDisabled}
+                                            onclick={handleAddParts}></lightning-button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Prompt Template panel -->
+            <template lwc:if={hasPromptTemplate}>
+                <div class="prompt-section">
+                    <div class="prompt-card">
+                        <div class="prompt-header">
+                            <div class="prompt-header-left">
+                                <lightning-icon icon-name="utility:prompt_builder" size="x-small" class="prompt-icon"></lightning-icon>
+                                <h3 class="prompt-title">{promptTemplateLabel}</h3>
+                            </div>
+                            <button class="copy-btn" title="Copy to clipboard" onclick={handleCopyPrompt}>
+                                <lightning-icon icon-name="utility:copy" size="x-small" class="copy-icon"></lightning-icon>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                        <p class="prompt-body">{resolvedPromptTemplate}</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Flow modal -->
+            <template lwc:if={showFlow}>
+                <div class="flow-backdrop" onclick={handleFlowBackdropClick}>
+                    <div class="flow-modal" onclick={handleFlowModalClick}>
+                        <div class="flow-modal-header">
+                            <h2 class="flow-modal-title">{flowMenuLabel}</h2>
+                            <button class="flow-modal-close" onclick={handleFlowClose}>
+                                <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                            </button>
+                        </div>
+                        <div class="flow-modal-body">
+                            <lightning-flow
+                                flow-api-name={flowApiName}
+                                flow-input-variables={flowInputVariables}
+                                onstatuschange={handleFlowStatusChange}>
+                            </lightning-flow>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Map modal -->
+            <template lwc:if={showMap}>
+                <div class="flow-backdrop" onclick={handleMapBackdropClick}>
+                    <div class="map-modal" onclick={handleMapModalClick}>
+                        <div class="flow-modal-header">
+                            <div class="map-modal-title-row">
+                                <lightning-icon icon-name="utility:location" size="x-small" class="map-title-icon"></lightning-icon>
+                                <h2 class="flow-modal-title">Asset Location</h2>
+                            </div>
+                            <button class="flow-modal-close" onclick={handleMapClose}>
+                                <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                            </button>
+                        </div>
+                        <div class="map-modal-body">
+                            <template lwc:if={hasMapMarkers}>
+                                <lightning-map
+                                    map-markers={mapMarkers}
+                                    zoom-level="14"
+                                    class="asset-map">
+                                </lightning-map>
+                            </template>
+                            <template lwc:else>
+                                <div class="state-container">
+                                    <lightning-icon icon-name="utility:location" size="small"></lightning-icon>
+                                    <p class="state-text">No address available for this asset</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </template>
+
+        <!-- Footer -->
+        <div class="card-footer">
+            <template lwc:if={assetId}>
+                <a class="footer-link" onclick={handleViewAsset}>View Full Record</a>
+            </template>
+            <template lwc:else>
+                <span class="footer-link footer-link--disabled">No Asset Linked</span>
+            </template>
+        </div>
+
+    </div>
+</template>

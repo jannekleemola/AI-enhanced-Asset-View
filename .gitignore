@@ -1,0 +1,7 @@
+.sf/
+.sfdx/
+.localdevserver/
+.DS_Store
+node_modules/
+# org-specific Lightning page kept local only
+force-app/main/default/flexipages/

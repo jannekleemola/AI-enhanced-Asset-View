@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+
+            <property
+                name="cardTitle"
+                type="String"
+                label="Card Title"
+                default="Asset Details"
+                description="Heading shown at the top of the card"/>
+
+            <property
+                name="assetLookupField"
+                type="String"
+                label="Asset Lookup Field API Name"
+                default="AssetId"
+                description="API name of the field on this record that holds the Asset ID (e.g. AssetId, Asset__c)"/>
+
+            <!-- Field visibility toggles -->
+            <property
+                name="showSerialNumber"
+                type="Boolean"
+                label="Show Serial Number"
+                default="true"/>
+
+            <property
+                name="showStatus"
+                type="Boolean"
+                label="Show Status"
+                default="true"/>
+
+            <property
+                name="showWarrantyStatus"
+                type="Boolean"
+                label="Show Warranty Status"
+                default="true"/>
+
+            <property
+                name="showInstallDate"
+                type="Boolean"
+                label="Show Install Date"
+                default="true"/>
+
+            <property
+                name="showLastService"
+                type="Boolean"
+                label="Show Last Service"
+                description="Date of the most recent completed or closed work order on the asset or its components"
+                default="true"/>
+
+            <property
+                name="showLocation"
+                type="Boolean"
+                label="Show Location"
+                default="true"/>
+
+            <property
+                name="showAccount"
+                type="Boolean"
+                label="Show Account"
+                default="false"/>
+
+            <property
+                name="showPartNumber"
+                type="Boolean"
+                label="Show Part Number (SKU)"
+                default="false"/>
+
+            <!-- Asset Insights -->
+            <property
+                name="showEinsteinInsights"
+                type="Boolean"
+                label="Show Asset Insights Panel"
+                default="true"/>
+
+            <property
+                name="insightsTitle"
+                type="String"
+                label="Insights Panel Title"
+                default="Asset Insights"
+                description="Heading shown on the insights panel, e.g. Appliance Insights."/>
+
+            <property
+                name="insightsFieldApiName"
+                type="String"
+                label="Asset Insights Field API Name"
+                description="API name of a field on the Asset object whose value is shown as the insights text (e.g. Asset_Insights__c). Leave blank to use the default status-based text."/>
+
+            <property
+                name="insightsPromptTemplate"
+                type="String"
+                label="Asset Insights Prompt Template API Name"
+                default="Asset_Insights"
+                description="Flex prompt template (inputs: Asset, AsOfDate) that generates the insights text. Leave blank to use the insights field / status-based text."/>
+
+            <property
+                name="insightTemplates"
+                type="String"
+                label="Insight Prompt Templates (switchable)"
+                description="Comma-separated list of Flex prompt templates shown as tabs in the insights panel, format ApiName:Label (e.g. Asset_Insights:Insights, Asset_Root_Cause_Analysis:Root Cause). Overrides the single template above."/>
+
+            <property
+                name="defaultInsightTemplate"
+                type="String"
+                label="Default Insight Template"
+                description="API name of the template tab selected first (e.g. Asset_Spare_Parts_Recommendation). Blank = first in the list."/>
+
+            <property
+                name="faultCodeField"
+                type="String"
+                label="Work Order Fault Code Field API Name"
+                description="Optional WorkOrder field holding a fault/symptom code. Used to group fleet history (jobs and parts per fault code) in the AI grounding."/>
+
+            <property
+                name="partsSelectionTemplate"
+                type="String"
+                label="Parts Selection Tab (template API name)"
+                description="Prompt template whose tab also shows a selectable spare-parts list with an Add to work order button (work orders only), e.g. Asset_Spare_Parts_Recommendation."/>
+
+            <property
+                name="partsMinProbability"
+                type="Integer"
+                label="Parts: Minimum Probability (%)"
+                default="8"
+                description="Minimum share of similar repairs that used a part before it is listed as Also check."/>
+
+            <property
+                name="laborProductCode"
+                type="String"
+                label="Labour Product Code"
+                description="ProductCode of a labour/service product offered with the parts (e.g. L-1000). Leave blank to hide."/>
+
+            <property
+                name="laborQuantity"
+                type="String"
+                label="Labour Quantity (hours)"
+                default="1"/>
+
+            <property
+                name="priceCurrency"
+                type="String"
+                label="Parts: Price Currency"
+                description="ISO currency code for part prices (e.g. SEK). Leave blank to use the work order currency."/>
+
+            <!-- Warranty -->
+            <property
+                name="warrantyTermCodes"
+                type="String"
+                label="Warranty Term Codes"
+                description="Comma-separated Warranty Term codes that decide the Warranty Status (e.g. MFR-24). Leave blank to consider all asset warranties."/>
+
+            <property
+                name="insightsMaxHeight"
+                type="Integer"
+                label="Insights Panel Max Height (px)"
+                default="420"
+                description="Height after which the insights/predictions area scrolls internally (header and tabs stay fixed). 0 = no limit."/>
+
+            <property
+                name="asOfDate"
+                type="String"
+                label="As-Of Date (YYYY-MM-DD)"
+                description="Date treated as today for warranty status and insights. Leave blank to use today."/>
+
+            <!-- Prompt Template -->
+            <property
+                name="showPromptTemplate"
+                type="Boolean"
+                label="Show Prompt Template Panel"
+                default="false"/>
+
+            <property
+                name="promptTemplateLabel"
+                type="String"
+                label="Prompt Template Panel Label"
+                default="AI Prompt Template"
+                description="Label shown in the prompt template panel header"/>
+
+            <property
+                name="promptTemplate"
+                type="String"
+                label="Prompt Template"
+                description="Template text for the AI prompt. Supports merge tokens: {assetName} {serialNumber} {status} {location} {installDate} {account}. Example: 'Inspect {assetName} (S/N: {serialNumber}), currently {status} at {location}. Installed: {installDate}.'"/>
+
+            <!-- Map -->
+            <property
+                name="showMapButton"
+                type="Boolean"
+                label="Show Map Button"
+                default="false"
+                description="Show a location icon button in the header to open the asset map"/>
+
+            <property
+                name="mapAddressField"
+                type="String"
+                label="Map Address Field API Name (single-field, optional)"
+                description="Optional. API name of a single parent field holding a full address string. If set, it overrides the compound address fields below. Leave blank to use Street/City/State/PostalCode/Country."/>
+
+            <property
+                name="mapStreetField"
+                type="String"
+                label="Map Street Field API Name"
+                default="Street"
+                description="Parent record field for the street part of the map address (default: Street)"/>
+
+            <property
+                name="mapCityField"
+                type="String"
+                label="Map City Field API Name"
+                default="City"
+                description="Parent record field for the city part of the map address (default: City)"/>
+
+            <property
+                name="mapStateField"
+                type="String"
+                label="Map State Field API Name"
+                default="State"
+                description="Parent record field for the state/province part of the map address (default: State)"/>
+
+            <property
+                name="mapPostalCodeField"
+                type="String"
+                label="Map Postal Code Field API Name"
+                default="PostalCode"
+                description="Parent record field for the postal code part of the map address (default: PostalCode)"/>
+
+            <property
+                name="mapCountryField"
+                type="String"
+                label="Map Country Field API Name"
+                default="Country"
+                description="Parent record field for the country part of the map address (default: Country)"/>
+
+            <!-- Flow configuration -->
+            <property
+                name="flowApiName"
+                type="String"
+                label="Flow API Name"
+                description="API name of a Flow to run from the Actions menu. Leave blank to hide the Flow action."/>
+
+            <property
+                name="flowMenuLabel"
+                type="String"
+                label="Flow Action Label"
+                default="Run Flow"
+                description="Label shown for the Flow item in the Actions menu"/>
+
+            <property
+                name="flowInputVariableName"
+                type="String"
+                label="Flow Input Variable Name"
+                default="recordId"
+                description="Name of the Flow input variable that will receive the Asset record ID"/>
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

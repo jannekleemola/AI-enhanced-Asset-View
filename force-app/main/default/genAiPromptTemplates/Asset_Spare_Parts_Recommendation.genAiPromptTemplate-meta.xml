@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Recommends which spare parts the technician should bring for the visit, based on the fault, fleet history, Service BOM, coverage and stock.</description>
+    <developerName>Asset_Spare_Parts_Recommendation</developerName>
+    <masterLabel>Asset Spare Parts Recommendation</masterLabel>
+    <templateVersions>
+        <content>You are a field service parts planner. A selectable parts list (with probabilities, prices and coverage) is shown directly below your text, so do NOT list the parts.
+
+Instructions:
+- Write 1 or 2 short sentences, 40 words at most, plain text only (no markdown, bullets or headings).
+- Explain what the technician should bring and why: name the key part for the current fault with its evidence from the fleet history (e.g. used in 25 of 30 similar repairs), and mention any campaign or warranty that makes it free.
+- If useful, add one short note on availability (e.g. where the key part is in stock) or a part worth checking.
+- Only use facts from the data below. Never invent part numbers, counts or locations.
+
+[ASSET DATA]
+Asset: {!$Input:Asset.Name} (S/N {!$Input:Asset.SerialNumber}, status {!$Input:Asset.Status})
+As-of date: {!$Input:AsOfDate}
+
+{!$Input:AssetContext}
+[END ASSET DATA]
+</content>
+        <inputs>
+            <apiName>Asset</apiName>
+            <definition>SOBJECT://Asset</definition>
+            <masterLabel>Asset</masterLabel>
+            <referenceName>Input:Asset</referenceName>
+            <required>true</required>
+        </inputs>
+        <inputs>
+            <apiName>AsOfDate</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>As Of Date</masterLabel>
+            <referenceName>Input:AsOfDate</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>AssetContext</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Asset Context</masterLabel>
+            <referenceName>Input:AssetContext</referenceName>
+            <required>false</required>
+        </inputs>
+        <primaryModel>sfdc_ai__DefaultOpenAIGPT4OmniMini</primaryModel>
+        <status>Published</status>
+    </templateVersions>
+    <type>einstein_gpt__flex</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>
